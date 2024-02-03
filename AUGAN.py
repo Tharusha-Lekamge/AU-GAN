@@ -42,11 +42,11 @@ class AUGAN(object):
                                       args.phase == 'train'))
         self.save_conf = args.save_conf
         self._build_model()
-        self.saver = tf.train.Saver()
+        self.saver = tf.compat.v1.train.Saver()
         self.pool = ImagePool(args.max_size)
 
     def _build_model(self):
-        self.real_data = tf.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
+        self.real_data = tf.compat.v1.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
                                                      self.input_c_dim + self.output_c_dim], name='real_A_and_B_images')
 
         self.real_A = self.real_data[:, :, :, :self.input_c_dim]
@@ -120,21 +120,21 @@ class AUGAN(object):
         self.g_rec_real = abs_criterion(self.rec_realA, self.real_A) + abs_criterion(self.rec_realB, self.real_B)
         self.g_rec_cycle = abs_criterion(self.real_A, self.fake_A_) + abs_criterion(self.real_B, self.fake_B_)
 
-        self.fake_A_sample = tf.placeholder(tf.float32,
+        self.fake_A_sample = tf.compat.v1.placeholder(tf.float32,
                                             [self.batch_size, self.image_size, self.image_size * 2, self.output_c_dim],
                                             name='fake_A_sample')
-        self.fake_B_sample = tf.placeholder(tf.float32,
+        self.fake_B_sample = tf.compat.v1.placeholder(tf.float32,
                                             [self.batch_size, self.image_size, self.image_size * 2, self.output_c_dim],
                                             name='fake_B_sample')
-        self.rec_A_sample = tf.placeholder(tf.float32,
+        self.rec_A_sample = tf.compat.v1.placeholder(tf.float32,
                                            [self.batch_size, self.image_size, self.image_size * 2, self.output_c_dim],
                                            name='rec_A_sample')
-        self.rec_B_sample = tf.placeholder(tf.float32,
+        self.rec_B_sample = tf.compat.v1.placeholder(tf.float32,
                                            [self.batch_size, self.image_size, self.image_size * 2, self.output_c_dim],
                                            name='rec_B_sample')
-        self.rec_fakeA_sample = tf.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
+        self.rec_fakeA_sample = tf.compat.v1.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
                                                             self.output_c_dim], name='rec_fakeA_sample')
-        self.rec_fakeB_sample = tf.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
+        self.rec_fakeB_sample = tf.compat.v1.placeholder(tf.float32, [self.batch_size, self.image_size, self.image_size * 2,
                                                             self.output_c_dim], name='rec_fakeB_sample')
 
         self.d_loss_item = []
@@ -157,27 +157,27 @@ class AUGAN(object):
             self.d_loss = (self.da_loss + self.db_loss)
             self.d_loss_item.append(self.d_loss)
 
-        self.g_loss_a2b_sum = tf.summary.scalar("g_loss_a2b", self.g_loss_a2b)
-        self.g_loss_b2a_sum = tf.summary.scalar("g_loss_b2a", self.g_loss_b2a)
-        self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
-        self.g_sum = tf.summary.merge([self.g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
-        self.db_loss_sum = tf.summary.scalar("db_loss", self.db_loss)
-        self.da_loss_sum = tf.summary.scalar("da_loss", self.da_loss)
-        self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-        self.db_loss_real_sum = tf.summary.scalar("db_loss_real", self.db_loss_real)
-        self.db_loss_fake_sum = tf.summary.scalar("db_loss_fake", self.db_loss_fake)
-        self.da_loss_real_sum = tf.summary.scalar("da_loss_real", self.da_loss_real)
-        self.da_loss_fake_sum = tf.summary.scalar("da_loss_fake", self.da_loss_fake)
-        self.d_sum = tf.summary.merge(
+        self.g_loss_a2b_sum = tf.compat.v1.summary.scalar("g_loss_a2b", self.g_loss_a2b)
+        self.g_loss_b2a_sum = tf.compat.v1.summary.scalar("g_loss_b2a", self.g_loss_b2a)
+        self.g_loss_sum = tf.compat.v1.summary.scalar("g_loss", self.g_loss)
+        self.g_sum = tf.compat.v1.summary.merge([self.g_loss_a2b_sum, self.g_loss_b2a_sum, self.g_loss_sum])
+        self.db_loss_sum = tf.compat.v1.summary.scalar("db_loss", self.db_loss)
+        self.da_loss_sum = tf.compat.v1.summary.scalar("da_loss", self.da_loss)
+        self.d_loss_sum = tf.compat.v1.summary.scalar("d_loss", self.d_loss)
+        self.db_loss_real_sum = tf.compat.v1.summary.scalar("db_loss_real", self.db_loss_real)
+        self.db_loss_fake_sum = tf.compat.v1.summary.scalar("db_loss_fake", self.db_loss_fake)
+        self.da_loss_real_sum = tf.compat.v1.summary.scalar("da_loss_real", self.da_loss_real)
+        self.da_loss_fake_sum = tf.compat.v1.summary.scalar("da_loss_fake", self.da_loss_fake)
+        self.d_sum = tf.compat.v1.summary.merge(
             [self.da_loss_sum, self.da_loss_real_sum, self.da_loss_fake_sum,
              self.db_loss_sum, self.db_loss_real_sum, self.db_loss_fake_sum,
              self.d_loss_sum]
         )
 
-        self.test_A = tf.placeholder(tf.float32,
+        self.test_A = tf.compat.v1.placeholder(tf.float32,
                                      [self.batch_size, self.image_size, self.image_size * 2, self.input_c_dim],
                                      name='test_A')
-        self.test_B = tf.placeholder(tf.float32,
+        self.test_B = tf.compat.v1.placeholder(tf.float32,
                                      [self.batch_size, self.image_size, self.image_size * 2, self.output_c_dim],
                                      name='test_B')
 
@@ -192,7 +192,7 @@ class AUGAN(object):
         self.rec_cycle_B, self.refine_testA, _, _, _ = self.generator(self.testA, self.options, True, True,
                                                                       name="generatorA2B")
 
-        t_vars = tf.trainable_variables()
+        t_vars = tf.compat.v1.trainable_variables()
 
         self.g_vars = [var for var in t_vars if 'generator' in var.name]
         self.p_vars = [var for var in t_vars if 'percep' in var.name]
@@ -337,6 +337,8 @@ class AUGAN(object):
             sample_files = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testB'))
         else:
             raise Exception('--which_direction must be AtoB or BtoA')
+        
+        print(sample_files)
 
         if self.load(args.checkpoint_dir):
             print(" [*] Load SUCCESS")
@@ -371,3 +373,58 @@ class AUGAN(object):
                 conf_img_sq = np.squeeze(conf_img)
                 plt.imshow(conf_img_sq, cmap='plasma', interpolation='nearest', alpha=1.0)
                 plt.savefig(conf_path)
+
+    def convert(self, args, datadir='./inf_data'):
+        total_time = 0
+
+        init_op = tf.compat.v1.global_variables_initializer()
+        self.sess.run(init_op)
+        
+        if self.load(args.checkpoint_dir):
+            print(" [*] Load SUCCESS")
+        else:
+            raise Exception('-- Cannot Load Model. Train or Add model first')
+
+        if args.which_direction == 'AtoB':
+            sample_files = glob(datadir)
+        elif args.which_direction == 'BtoA':
+            sample_files = glob(datadir)
+        else:
+            raise Exception('--which_direction must be AtoB or BtoA')
+        
+        print(sample_files)
+
+        out_var, refine_var, in_var, rec_var, cycle_var, percep_var, conf_var = (
+            self.testB, self.refine_testB, self.test_A, self.rec_testA, self.rec_cycle_A, self.testA_percep,
+            self.test_pred_confA) if args.which_direction == 'AtoB' else (
+            self.testA, self.refine_testA, self.test_B, self.rec_testB, self.rec_cycle_B, self.testB_percep,
+            self.test_pred_confA)
+        for sample_file in sample_files:
+            print('Processing image: ' + sample_file)
+            sample_image = [load_test_data(sample_file, args.fine_size)]
+            start_time = time.time()
+            sample_image = np.array(sample_image).astype(np.float32)
+            image_path = os.path.join(args.test_dir,
+                                      '{0}_{1}'.format(args.which_direction, os.path.basename(sample_file)))
+            conf_path = os.path.join(args.conf_dir,
+                                     '{0}_{1}'.format(args.which_direction, os.path.basename(sample_file)))
+
+            fake_img, = self.sess.run([out_var], feed_dict={in_var: sample_image})
+            end_time = time.time()
+            merge = np.concatenate([sample_image, fake_img], axis=2)
+            save_images(merge, [1, 1], image_path)
+            total_time = total_time + (end_time - start_time)
+            print(f"Time taken to convert image: {end_time - start_time} seconds")
+
+            if args.save_conf:
+
+                if args.which_direction == 'AtoB':
+                    pass
+                else:
+                    raise Exception('--conf map only can be estimated in AtoB direction')
+
+                conf_img = self.sess.run(conf_var, feed_dict={in_var: sample_image})
+                conf_img_sq = np.squeeze(conf_img)
+                plt.imshow(conf_img_sq, cmap='plasma', interpolation='nearest', alpha=1.0)
+                plt.savefig(conf_path)
+        print(f"Average time taken to convert images: {total_time/len(sample_files)} seconds")

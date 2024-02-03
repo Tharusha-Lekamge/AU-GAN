@@ -6,16 +6,15 @@ from glob import glob
 
 
 def gaussian_noise_layer(input_layer, std):
-    noise = tf.random_normal(shape=tf.shape(input_layer), mean=0.0, stddev=std, dtype=tf.float32)
+    noise = tf.random.normal(shape=tf.shape(input_layer), mean=0.0, stddev=std, dtype=tf.float32)
     return input_layer + noise
 
-
 def generator_resnet(image, options, transfer=False, reuse=False, name="generator"):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         if reuse:
-            tf.get_variable_scope().reuse_variables()
+            tf.compat.v1.get_variable_scope().reuse_variables()
         else:
-            assert tf.get_variable_scope().reuse is False
+            assert tf.compat.v1.get_variable_scope().reuse is False
 
         def residule_block_dilated(x, dim, ks=3, s=1, name='res', down=False):
             if down:
@@ -116,12 +115,12 @@ def discriminator(image, options, n_scale=2, reuse=False, name="discriminator"):
     images = []
     for i in range(n_scale):
         images.append(
-            tf.image.resize_bicubic(image, [get_shape(image)[1] // (2 ** i), get_shape(image)[2] // (2 ** i)]))
-    with tf.variable_scope(name):
+            tf.compat.v1.image.resize_bicubic(image, [get_shape(image)[1] // (2 ** i), get_shape(image)[2] // (2 ** i)]))
+    with tf.compat.v1.variable_scope(name):
         if reuse:
-            tf.get_variable_scope().reuse_variables()
+            tf.compat.v1.get_variable_scope().reuse_variables()
         else:
-            assert tf.get_variable_scope().reuse is False
+            assert tf.compat.v1.get_variable_scope().reuse is False
         images = dis_down(images, 4, 2, n_scale, options.df_dim, 'd_h0_conv_scale_')
         images = dis_down(images, 4, 2, n_scale, options.df_dim * 2, 'd_h1_conv_scale_')
         images = dis_down(images, 4, 2, n_scale, options.df_dim * 4, 'd_h2_conv_scale_')

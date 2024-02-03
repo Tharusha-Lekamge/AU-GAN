@@ -4,6 +4,8 @@ import os
 from utils import *
 from AUGAN import AUGAN
 from ops import *
+import time
+
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--dataset_dir', dest='dataset_dir', default='bdd100k', help='path of the dataset')
 parser.add_argument('--experiment_name', dest='experiment_name', type=str, default='bdd_exp',  help='name of experiment')
@@ -35,17 +37,29 @@ parser.add_argument('--max_size', dest='max_size', type=int, default=50,help='ma
 parser.add_argument('--continue_train', dest='continue_train', type=bool, default=False, help='if continue training, load the latest model: 1: true, 0: false')
 parser.add_argument('--save_conf', dest='save_conf', type=bool, default=False, help='save conf map in test phase')
 args = parser.parse_args()
+
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
+
 def main(_):
 
     set_path(args, args.experiment_name)
 
-    tfconfig = tf.ConfigProto(allow_soft_placement=True)
+    tfconfig = tf.compat.v1.ConfigProto(allow_soft_placement=True)
     tfconfig.gpu_options.allow_growth = True
-    with tf.Session(config=tfconfig) as sess:
+    with tf.compat.v1.Session(config=tfconfig) as sess:
         model = AUGAN(sess, args)
         # show_all_variables()
-        model.train(args) if args.phase == 'train' \
-            else model.test(args)
+        # model.train(args) if args.phase == 'train' \
+        #     else model.test(args)
+            
+        if args.phase == 'train':
+            model.train(args)
+        elif args.phase == 'test':
+            model.test(args)
+        elif args.phase == 'convert':
+            model.convert(args)
+        else:
+            raise Exception("Give a phase") 
+
 if __name__ == '__main__':
-    tf.app.run()
+    tf.compat.v1.app.run()

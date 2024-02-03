@@ -13,13 +13,13 @@ def batch_norm(x, name="batch_norm"):
 
 
 def instance_norm(input, name="instance_norm"):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         depth = input.get_shape()[3]
-        scale = tf.get_variable("scale", [depth], initializer=tf.random_normal_initializer(1.0, 0.02, dtype=tf.float32))
-        offset = tf.get_variable("offset", [depth], initializer=tf.constant_initializer(0.0))
+        scale = tf.compat.v1.get_variable("scale", [depth], initializer=tf.random_normal_initializer(1.0, 0.02, dtype=tf.float32))
+        offset = tf.compat.v1.get_variable("offset", [depth], initializer=tf.constant_initializer(0.0))
         mean, variance = tf.nn.moments(input, axes=[1, 2], keep_dims=True)
         epsilon = 1e-5
-        inv = tf.rsqrt(variance + epsilon)
+        inv = tf.math.rsqrt(variance + epsilon)
         normalized = (input - mean) * inv
         return scale * normalized + offset
 
@@ -32,15 +32,15 @@ def conv2d(input_, output_dim, ks=4, s=2, stddev=0.02, padding='SAME', name="con
 
 
 def deconv2d(input_, output_dim, ks=4, s=2, stddev=0.02, name="deconv2d"):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         return slim.conv2d_transpose(input_, output_dim, ks, s, padding='SAME', activation_fn=None,
                                      weights_initializer=tf.truncated_normal_initializer(stddev=stddev),
                                      biases_initializer=None)
 
 def dilated_conv2d(input_, output_dim, ks=3, s=2, stddev=0.02, padding='SAME', name="conv2d"):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         batch, in_height, in_width, in_channels = [int(d) for d in input_.get_shape()]
-        filter = tf.get_variable("filter", [ks, ks, in_channels, output_dim], dtype=tf.float32,
+        filter = tf.compat.v1.get_variable("filter", [ks, ks, in_channels, output_dim], dtype=tf.float32,
                                  initializer=tf.random_normal_initializer(0, stddev))
         conv = tf.nn.atrous_conv2d(input_,filter,rate=s,padding=padding,name=name)
 
