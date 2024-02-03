@@ -328,6 +328,7 @@ class AUGAN(object):
                     './{}/{:02d}/B_{:04d}.jpg'.format(sample_dir, epoch, idx))
 
     def test(self, args):
+        total_time = 0
 
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)
@@ -350,8 +351,9 @@ class AUGAN(object):
             self.testA, self.refine_testA, self.test_B, self.rec_testB, self.rec_cycle_B, self.testB_percep,
             self.test_pred_confA)
         for sample_file in sample_files:
-            print('Processing image: ' + sample_file)
+            # print('Processing image: ' + sample_file)
             sample_image = [load_test_data(sample_file, args.fine_size)]
+            start_time = time.time()
             sample_image = np.array(sample_image).astype(np.float32)
             image_path = os.path.join(args.test_dir,
                                       '{0}_{1}'.format(args.which_direction, os.path.basename(sample_file)))
@@ -359,8 +361,10 @@ class AUGAN(object):
                                      '{0}_{1}'.format(args.which_direction, os.path.basename(sample_file)))
 
             fake_img, = self.sess.run([out_var], feed_dict={in_var: sample_image})
+            end_time = time.time()
             merge = np.concatenate([sample_image, fake_img], axis=2)
             save_images(merge, [1, 1], image_path)
+            total_time = total_time + (end_time - start_time)
 
             if args.save_conf:
 
@@ -373,6 +377,7 @@ class AUGAN(object):
                 conf_img_sq = np.squeeze(conf_img)
                 plt.imshow(conf_img_sq, cmap='plasma', interpolation='nearest', alpha=1.0)
                 plt.savefig(conf_path)
+        print(f"Average time taken to convert images: {total_time/len(sample_files)} seconds")
 
     def convert(self, args, datadir='./inf_data'):
         total_time = 0
@@ -428,3 +433,34 @@ class AUGAN(object):
                 plt.imshow(conf_img_sq, cmap='plasma', interpolation='nearest', alpha=1.0)
                 plt.savefig(conf_path)
         print(f"Average time taken to convert images: {total_time/len(sample_files)} seconds")
+        
+    def convert_image(self, args, input_image_path, output_dir):
+        init_op = tf.global_variables_initializer()
+        if self.load(args.checkpoint_dir):
+            print(" [*] Load SUCCESS")
+        with tf.Session() as sess:
+            sess.run(init_op)
+            # Load the input image
+            input_image = [load_test_data(input_image_path, self.fine_size)]
+            input_image = np.array(input_image).astype(np.float32)
+
+            # Get the generator output
+            if args.which_direction == 'AtoB':
+                out_var = self.testB
+                in_var = self.test_A
+            else:
+                out_var = self.testA
+                in_var = self.test_B
+
+            # Run the model to obtain the converted image
+            start_time = time.time()
+            converted_image = sess.run(out_var, feed_dict={in_var: input_image})
+            end_time = time.time()
+
+            # Save the converted image
+            output_image_path = os.path.join(output_dir, os.path.basename(input_image_path))
+            merge = np.concatenate([input_image, converted_image], axis=2)
+            save_images(merge, [1, 1], output_image_path)
+
+            # Print the time taken
+            print(f"Time taken to convert image: {end_time - start_time} seconds")

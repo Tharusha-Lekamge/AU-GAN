@@ -57,7 +57,7 @@ def main(_):
         elif args.phase == 'test':
             model.test(args)
         elif args.phase == 'convert':
-            model.convert(args)
+            model.convert_image(args, "inf_data/b1ca2e5d-84cf9134.jpg", "out")
         else:
             raise Exception("Give a phase") 
 
