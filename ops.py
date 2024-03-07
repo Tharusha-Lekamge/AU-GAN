@@ -29,7 +29,7 @@ def instance_norm(input, name="instance_norm"):
         scale = tf.compat.v1.get_variable(
             "scale",
             [depth],
-            initializer=tf.random_normal_initializer(1.0, 0.02, dtype=tf.float32),
+            initializer = tf.keras.initializers.RandomNormal(mean=1.0, stddev=0.02, dtype=tf.float32),
         )
         offset = tf.compat.v1.get_variable(
             "offset", [depth], initializer=tf.constant_initializer(0.0)
