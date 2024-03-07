@@ -524,7 +524,7 @@ class AUGAN(object):
     def test(self, args):
         total_time = 0
 
-        init_op = tf.global_variables_initializer()
+        init_op = tf.compat.v1.global_variables_initializer()
         self.sess.run(init_op)
         if args.which_direction == "AtoB":
             sample_files = glob("./datasets/{}/*.*".format(self.dataset_dir + "/testA"))
@@ -681,7 +681,7 @@ class AUGAN(object):
         )
 
     def convert_image(self, args, input_image_path, output_dir):
-        init_op = tf.global_variables_initializer()
+        init_op = tf.compat.v1.global_variables_initializer()
         if self.load(args.checkpoint_dir):
             print(" [*] Load SUCCESS")
         with tf.Session() as sess:
