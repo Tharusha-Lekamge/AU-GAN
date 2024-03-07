@@ -28,15 +28,15 @@ def generator_resnet(image, options, transfer=False, reuse=False, name="generato
             return out
 
         def residual_block(x_init, dim, ks=3, s=1, name='resblock', down=False):
-            with tf.variable_scope(name):
+            with tf.compat.v1.variable_scope(name):
                 if down:
                     dim = dim * 2
 
-                with tf.variable_scope('res1'):
+                with tf.compat.v1.variable_scope('res1'):
                     x = instance_norm(conv2d(x_init, dim, ks, s, padding='SAME', name=name + '_c1'), name + '_in1')
                     x = tf.nn.relu(x)
 
-                with tf.variable_scope('res2'):
+                with tf.compat.v1.variable_scope('res2'):
 
                     x = instance_norm(conv2d(x, dim, ks, s, padding='SAME', name=name + '_c2'), name + '_in2')
 

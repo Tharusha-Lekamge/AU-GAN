@@ -161,7 +161,7 @@ def lrelu(x, leak=0.2, name="lrelu"):
 
 
 def linear(input_, output_size, scope=None, stddev=0.02, bias_start=0.0, with_w=False):
-    with tf.variable_scope(scope or "Linear"):
+    with tf.compat.v1.variable_scope(scope or "Linear"):
         matrix = tf.get_variable(
             "Matrix",
             [input_.get_shape()[-1], output_size],
@@ -201,7 +201,7 @@ def conv(
     use_bias=True,
     scope="conv_0",
 ):
-    with tf.variable_scope(scope):
+    with tf.compat.v1.variable_scope(scope):
         if pad_type == "zero":
             x = tf.pad(x, [[0, 0], [pad, pad], [pad, pad], [0, 0]])
         if pad_type == "reflect":
