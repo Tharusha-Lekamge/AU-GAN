@@ -34,7 +34,7 @@ def instance_norm(input, name="instance_norm"):
         offset = tf.compat.v1.get_variable(
             "offset", [depth], initializer=tf.constant_initializer(0.0)
         )
-        mean, variance = tf.nn.moments(input, axes=[1, 2], keep_dims=True)
+        mean, variance = tf.nn.moments(input, axes=[1, 2], keepdims=True)
         epsilon = 1e-5
         inv = tf.math.rsqrt(variance + epsilon)
         normalized = (input - mean) * inv
