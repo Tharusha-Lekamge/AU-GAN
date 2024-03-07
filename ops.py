@@ -50,7 +50,7 @@ def conv2d(input_, output_dim, ks=4, s=2, stddev=0.02, padding="SAME", name="con
             s,
             padding=padding,
             activation_fn=None,
-            weights_initializer=tf.truncated_normal_initializer(stddev=stddev),
+            weights_initializer = tf.keras.initializers.TruncatedNormal(stddev=stddev),
             biases_initializer=None,
         )
 
@@ -64,7 +64,7 @@ def deconv2d(input_, output_dim, ks=4, s=2, stddev=0.02, name="deconv2d"):
             s,
             padding="SAME",
             activation_fn=None,
-            weights_initializer=tf.truncated_normal_initializer(stddev=stddev),
+            weights_initializer = tf.keras.initializers.TruncatedNormal(stddev=stddev),
             biases_initializer=None,
         )
 
