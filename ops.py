@@ -42,7 +42,7 @@ def instance_norm(input, name="instance_norm"):
 
 
 def conv2d(input_, output_dim, ks=4, s=2, stddev=0.02, padding="SAME", name="conv2d"):
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
         return slim.conv2d(
             input_,
             output_dim,
