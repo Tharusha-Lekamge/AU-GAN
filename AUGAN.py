@@ -492,6 +492,8 @@ class AUGAN(object):
     def sample_model(self, sample_dir, epoch, idx):
         dataA = glob("./datasets/{}/*.*".format(self.dataset_dir + "/testA"))
         dataB = glob("./datasets/{}/*.*".format(self.dataset_dir + "/testB"))
+        if (len(dataA) == 0) or (len(dataB) == 0):
+            raise Exception("No files found in the test directory")
         np.random.shuffle(dataA)
         np.random.shuffle(dataB)
         batch_files = list(zip(dataA[: self.batch_size], dataB[: self.batch_size]))
@@ -533,7 +535,10 @@ class AUGAN(object):
         else:
             raise Exception("--which_direction must be AtoB or BtoA")
 
-        print(sample_files)
+        if (len(sample_files) == 0):
+            raise Exception("No files found in the test directory")
+
+        # print(sample_files)
 
         if self.load(args.checkpoint_dir):
             print(" [*] Load SUCCESS")
