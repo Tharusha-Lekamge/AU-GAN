@@ -357,9 +357,14 @@ class AUGAN(object):
             else:
                 print(" [!] Load failed...")
 
+        print("Training.........................")
         for epoch in range(args.epoch):
             dataA = glob("./datasets/{}/*.*".format(self.dataset_dir + "/trainA"))
             dataB = glob("./datasets/{}/*.*".format(self.dataset_dir + "/trainB"))
+            if (len(dataA) == 0) or (len(dataB) == 0):
+                raise Exception("No files found in the dataset")
+            else:
+                print("Data found in the dataset. length of A: ", len(dataA), " B: ", len(dataB))
             np.random.shuffle(dataA)
             np.random.shuffle(dataB)
             batch_idxs = (
@@ -372,6 +377,7 @@ class AUGAN(object):
             )
 
             for idx in range(0, batch_idxs):
+                print("Epoch: [%2d] [%4d/%4d] " % (epoch, idx, batch_idxs))
                 batch_files = list(
                     zip(
                         dataA[idx * self.batch_size : (idx + 1) * self.batch_size],
@@ -384,6 +390,7 @@ class AUGAN(object):
                 ]
                 batch_images = np.array(batch_images).astype(np.float32)
                 # Update G network and record fake outputs
+                print("Training G network----------------------")
                 (
                     fake_A,
                     fake_B,
@@ -426,6 +433,7 @@ class AUGAN(object):
                 [fake_A, fake_B] = self.pool([fake_A, fake_B])
 
                 # Update D network
+                print("Training D network----------------------")
                 loss_print = []
                 for i in range(self.n_d):
                     _, d_loss, d_sum = self.sess.run(
