@@ -327,19 +327,19 @@ class AUGAN(object):
 
     def train(self, args):
 
-        self.lr = tf.placeholder(tf.float32, None, name="learning_rate")
+        self.lr = tf.compat.v1.placeholder(tf.float32, None, name="learning_rate")
 
         ### generator
-        self.g_optim = tf.train.AdamOptimizer(self.lr, beta1=args.beta1).minimize(
-            self.g_loss, var_list=self.g_vars
-        )
+        self.g_optim = tf.optimizers.Adam(
+            learning_rate=self.lr, beta_1=args.beta1
+        ).minimize(self.g_loss, var_list=self.g_vars, tape=None)
 
         ### translation
         self.d_optim_item = []
         for i in range(self.n_d):
-            self.d_optim = tf.train.AdamOptimizer(self.lr, beta1=args.beta1).minimize(
-                self.d_loss_item[i], var_list=self.d_vars_item[i]
-            )
+            self.d_optim = tf.optimizers.Adam(
+                learning_rate=self.lr, beta_1=args.beta1
+            ).minimize(self.g_loss, var_list=self.g_vars, tape=None)
             self.d_optim_item.append(self.d_optim)
 
         init_op = tf.compat.v1.global_variables_initializer()
@@ -364,7 +364,12 @@ class AUGAN(object):
             if (len(dataA) == 0) or (len(dataB) == 0):
                 raise Exception("No files found in the dataset")
             else:
-                print("Data found in the dataset. length of A: ", len(dataA), " B: ", len(dataB))
+                print(
+                    "Data found in the dataset. length of A: ",
+                    len(dataA),
+                    " B: ",
+                    len(dataB),
+                )
             np.random.shuffle(dataA)
             np.random.shuffle(dataB)
             batch_idxs = (
@@ -543,7 +548,7 @@ class AUGAN(object):
         else:
             raise Exception("--which_direction must be AtoB or BtoA")
 
-        if (len(sample_files) == 0):
+        if len(sample_files) == 0:
             raise Exception("No files found in the test directory")
 
         # print(sample_files)

@@ -54,26 +54,14 @@ Download the pretrained model for BDD100K(256x512) [here](https://drive.google.c
 ```bash
 
 # Alderley (256x512)
-python main_uncer.py --dataset_dir alderley
-                     --phase train
-                     --experiment_name alderley_exp
-                     --batch_size 8 
-                     --load_size 286 
-                     --fine_size 256 
-                     --use_uncertainty True
+python main.py --dataset_dir alderley --phase train --experiment_name alderley_exp --batch_size 8  --load_size 286  --fine_size 256  --use_uncertainty True
 
 ```
 
 ```bash
 
 # BDD100k (256x512)
-python main_uncer.py --dataset_dir bdd100k 
-                     --phase train
-                     --experiment_name bdd_exp
-                     --batch_size 8 
-                     --load_size 286
-                     --fine_size 256 
-                     --use_uncertainty True
+python main.py --dataset_dir bdd100k  --phase train --experiment_name bdd_exp --batch_size 8  --load_size 286 --fine_size 256  --use_uncertainty True
 
 ```
 
